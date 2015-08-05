@@ -22,6 +22,15 @@ namespace IntelliFactory.Reactive
 
 open WebSharper
 
+[<JavaScript>]
+module private Array =
+    
+    [<Inline "$1.push($0)">]
+    let push (_ : 'T) (_ : 'T array) = ()
+
+    [<Inline "$0.shift()">]
+    let shift (_ : 'T array) = ()
+
 type private IDisposable = System.IDisposable
 type private IObservable<'T> = System.IObservable<'T>
 type private IObserver<'T> = System.IObserver<'T>
@@ -249,6 +258,33 @@ module Reactive =
             let o2 =
                 let onNext y =
                     lv2 := Some y
+                    update ()
+                Observer.New onNext ignore
+            let d1 = io1.Subscribe o1
+            let d2 = io2.Subscribe o2
+            Disposable.New (fun () -> d1.Dispose() ; d2.Dispose())
+
+    [<JavaScript>]
+    let CombineOnlyNew (io1: IObservable<'T>) (io2: IO<'U>)
+        (f: 'T -> 'U -> 'S) : IObservable<'S> =
+        Observable.New <| fun o ->
+            let lv1s : 'T [] = [||]
+            let lv2s : 'U [] = [||]
+            let update () =
+                if lv1s.Length > 0 && lv2s.Length > 0 then
+                    let v1 = lv1s.[0]
+                    let v2 = lv2s.[0]
+                    Array.shift lv1s
+                    Array.shift lv2s
+                    o.OnNext (f v1 v2)
+            let o1 =
+                let onNext x =
+                    Array.push x lv1s
+                    update ()
+                Observer.New onNext ignore
+            let o2 =
+                let onNext y =
+                    Array.push y lv2s
                     update ()
                 Observer.New onNext ignore
             let d1 = io1.Subscribe o1
