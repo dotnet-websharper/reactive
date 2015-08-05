@@ -256,7 +256,7 @@ module Reactive =
             Disposable.New (fun () -> d1.Dispose() ; d2.Dispose())
 
     [<JavaScript>]
-    let CombineOnlyNew (io1: IObservable<'T>) (io2: IO<'U>)
+    let CombineLast (io1: IObservable<'T>) (io2: IO<'U>)
         (f: 'T -> 'U -> 'S) : IObservable<'S> =
         Observable.New <| fun o ->
             let lv1s = System.Collections.Generic.Queue<'T>()
