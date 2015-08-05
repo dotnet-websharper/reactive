@@ -22,15 +22,6 @@ namespace IntelliFactory.Reactive
 
 open WebSharper
 
-[<JavaScript>]
-module private Array =
-    
-    [<Inline "$1.push($0)">]
-    let push (_ : 'T) (_ : 'T array) = ()
-
-    [<Inline "$0.shift()">]
-    let shift (_ : 'T array) = ()
-
 type private IDisposable = System.IDisposable
 type private IObservable<'T> = System.IObservable<'T>
 type private IObserver<'T> = System.IObserver<'T>
@@ -268,23 +259,21 @@ module Reactive =
     let CombineOnlyNew (io1: IObservable<'T>) (io2: IO<'U>)
         (f: 'T -> 'U -> 'S) : IObservable<'S> =
         Observable.New <| fun o ->
-            let lv1s : 'T [] = [||]
-            let lv2s : 'U [] = [||]
+            let lv1s = System.Collections.Generic.Queue<'T>()
+            let lv2s = System.Collections.Generic.Queue<'U>()
             let update () =
-                if lv1s.Length > 0 && lv2s.Length > 0 then
-                    let v1 = lv1s.[0]
-                    let v2 = lv2s.[0]
-                    Array.shift lv1s
-                    Array.shift lv2s
+                if lv1s.Count > 0 && lv2s.Count > 0 then
+                    let v1 = lv1s.Dequeue()
+                    let v2 = lv2s.Dequeue()
                     o.OnNext (f v1 v2)
             let o1 =
                 let onNext x =
-                    Array.push x lv1s
+                    lv1s.Enqueue(x)
                     update ()
                 Observer.New onNext ignore
             let o2 =
                 let onNext y =
-                    Array.push y lv2s
+                    lv2s.Enqueue(y)
                     update ()
                 Observer.New onNext ignore
             let d1 = io1.Subscribe o1
