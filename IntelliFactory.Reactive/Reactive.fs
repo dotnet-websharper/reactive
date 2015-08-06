@@ -256,6 +256,31 @@ module Reactive =
             Disposable.New (fun () -> d1.Dispose() ; d2.Dispose())
 
     [<JavaScript>]
+    let CombineLast (io1: IObservable<'T>) (io2: IO<'U>)
+        (f: 'T -> 'U -> 'S) : IObservable<'S> =
+        Observable.New <| fun o ->
+            let lv1s = System.Collections.Generic.Queue<'T>()
+            let lv2s = System.Collections.Generic.Queue<'U>()
+            let update () =
+                if lv1s.Count > 0 && lv2s.Count > 0 then
+                    let v1 = lv1s.Dequeue()
+                    let v2 = lv2s.Dequeue()
+                    o.OnNext (f v1 v2)
+            let o1 =
+                let onNext x =
+                    lv1s.Enqueue(x)
+                    update ()
+                Observer.New onNext ignore
+            let o2 =
+                let onNext y =
+                    lv2s.Enqueue(y)
+                    update ()
+                Observer.New onNext ignore
+            let d1 = io1.Subscribe o1
+            let d2 = io2.Subscribe o2
+            Disposable.New (fun () -> d1.Dispose() ; d2.Dispose())
+
+    [<JavaScript>]
     let Switch (io: IObservable<IObservable<'T>>) : IObservable<'T> =
         Observable.New (fun o ->
             let disp =
