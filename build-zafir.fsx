@@ -10,6 +10,7 @@ let bt =
 let main =
     bt.Zafir.Library("IntelliFactory.Reactive")
         .SourcesFromProject()
+        .WithSourceMap()
 
 bt.Solution [
     main
