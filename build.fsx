@@ -1,27 +1,17 @@
-#load "tools/includes.fsx"
-open IntelliFactory.Build
+#load "paket-files/build/intellifactory/websharper/tools/WebSharper.Fake.fsx"
+open Fake
+open WebSharper.Fake
 
-let bt =
-    BuildTool().PackageId("IntelliFactory.Reactive")
-        .VersionFrom("WebSharper", versionSpec = "(,4.0)")
-        .WithFSharpVersion(FSharpVersion.FSharp30)
-        .WithFramework(fun fw -> fw.Net40)
+let targets =
+    GetSemVerOf "WebSharper"
+    |> ComputeVersion
+    |> WSTargets.Default
+    |> MakeTargets
 
-let main =
-    bt.WebSharper.Library("IntelliFactory.Reactive")
-        .SourcesFromProject()
+Target "Build" DoNothing
+targets.BuildDebug ==> "Build"
 
-bt.Solution [
-    main
+Target "CI-Release" DoNothing
+targets.CommitPublish ==> "CI-Release"
 
-    bt.NuGet.CreatePackage()
-        .Configure(fun c ->
-            { c with
-                Title = Some "IntelliFactory.Reactive"
-                LicenseUrl = Some "http://websharper.com/licensing"
-                ProjectUrl = Some "https://github.com/intellifactory/reactive"
-                Description = "Reactive Library for WebSharper"
-                RequiresLicenseAcceptance = true })
-        .Add(main)
-]
-|> bt.Dispatch
+RunTargetOrDefault "Build"

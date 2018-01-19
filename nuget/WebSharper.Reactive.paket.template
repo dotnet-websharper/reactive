@@ -1,0 +1,17 @@
+type file
+id WebSharper.Reactive
+authors
+    IntelliFactory
+owners
+    IntelliFactory
+licenseUrl http://websharper.com/licensing
+projectUrl https://github.com/intellifactory/reactive
+description
+    Reactive Library for WebSharper
+tags
+    Web JavaScript F# C#
+files
+    ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.dll ==> lib/netstandard2.0
+    ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.xml ==> lib/netstandard2.0
+dependencies
+        WebSharper LOCKEDVERSION
