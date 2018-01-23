@@ -14,4 +14,4 @@ files
     ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.dll ==> lib/netstandard2.0
     ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper LOCKEDVERSION
+        WebSharper ~> LOCKEDVERSION/3
