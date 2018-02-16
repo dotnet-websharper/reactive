@@ -11,8 +11,8 @@ description
 tags
     Web JavaScript F# C#
 files
-    ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.dll ==> lib/net461
-    ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.xml ==> lib/net461
+    ../IntelliFactory.Reactive/bin/Release/net461/IntelliFactory.Reactive.dll ==> lib/net461
+    ../IntelliFactory.Reactive/bin/Release/net461/IntelliFactory.Reactive.xml ==> lib/net461
     ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.dll ==> lib/netstandard2.0
     ../IntelliFactory.Reactive/bin/Release/netstandard2.0/IntelliFactory.Reactive.xml ==> lib/netstandard2.0
 dependencies
