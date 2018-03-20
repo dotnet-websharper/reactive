@@ -61,7 +61,6 @@ type IReactive =
     [<Name "Sequence">]
     abstract member Sequence : seq<IO<'T>> -> IO<seq<'T>>
 
-#if ZAFIR
 type private Disposable =
     [<JavaScript>]
     static member New d =
@@ -84,74 +83,6 @@ type private Observable<'T> =
         { new IObservable<'T> with
             member this.Subscribe o = f o
         }
-
-#else
-/// Implementation of IDisposable
-type private Disposable =
-    {
-        Dispose : unit -> unit
-    }
-
-    interface IDisposable with
-
-        [<JavaScript>]
-        member this.Dispose () =
-            this.Dispose ()
-
-    [<JavaScript>]
-    static member New d =
-        {Dispose = d} :> IDisposable
-
-/// Implementation of IObserver
-type private Observer<'T> =
-    {
-        OnNext : 'T -> unit
-        OnCompleted : unit -> unit
-    }
-
-    interface IObserver<'T> with
-
-        [<JavaScript>]
-        member this.OnNext t =
-            this.OnNext t
-
-        [<JavaScript>]
-        member this.OnCompleted() =
-            this.OnCompleted()
-
-        [<JavaScript>]
-        member this.OnError err =
-            ()
-
-    [<JavaScript>]
-    static member New onNext onComplete =
-        {
-            OnNext = onNext
-            OnCompleted = onComplete
-        } :> IObserver<'T>
-
-/// Implementation of IObserverable
-type private Observable<'T> =
-    {
-        OnSubscribe : IObserver<'T> -> IDisposable
-    }
-
-    interface IObservable<'T> with
-
-        [<JavaScript>]
-        member this.Subscribe o =
-            this.OnSubscribe o
-
-    [<JavaScript>]
-    [<Name "SubscribeWith">]
-    member this.Subscribe (onNext: 'T -> unit) (onComplete: unit -> unit) =
-        Observer.New onNext onComplete
-        |> this.OnSubscribe
-
-    [<JavaScript>]
-    static member New f =
-        {OnSubscribe = f} :> IObservable<'T>
-#endif
 
 /// Implementation for "hot stream".
 /// Subscribers to hot streams will only observe the latest
